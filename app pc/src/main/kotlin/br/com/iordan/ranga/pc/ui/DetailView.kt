@@ -63,7 +63,7 @@ fun MovieDetailView(
     }
 
     DetailScaffold(
-        title = detail?.getOrNull()?.movie?.title ?: "Filme",
+        title = detail?.getOrNull()?.movie?.title ?: t("Filme"),
         isFavorite = "movie:$streamId" in settings.favoriteKeys,
         onFavorite = { detail?.getOrNull()?.movie?.let { app.settings.toggleFavorite(it) } },
         onBack = onBack,
@@ -112,8 +112,8 @@ fun MovieDetailView(
                             ) {
                                 Icon(Icons.Default.PlayArrow, contentDescription = null)
                                 Text(
-                                    if (resumeMs > 0) "  Continuar de ${formatClock(resumeMs)}"
-                                    else "  Assistir"
+                                    if (resumeMs > 0) "  " + t("Continuar de %s", formatClock(resumeMs))
+                                    else "  " + t("Assistir")
                                 )
                             }
                             if (resumeMs > 0) {
@@ -123,14 +123,14 @@ fun MovieDetailView(
                                     },
                                     modifier = Modifier.focusRing(),
                                 ) {
-                                    Text("Do início")
+                                    Text(t("Do início"))
                                 }
                             }
                         }
                         movie.plot?.let { Text(it) }
                         movie.cast?.let {
                             Text(
-                                "Elenco: $it",
+                                t("Elenco: %s", it),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -158,7 +158,7 @@ fun SeriesDetailView(
     var season by remember { mutableIntStateOf(-1) }
 
     DetailScaffold(
-        title = detail?.getOrNull()?.series?.title ?: "Série",
+        title = detail?.getOrNull()?.series?.title ?: t("Série"),
         isFavorite = "series:$seriesId" in settings.favoriteKeys,
         onFavorite = { detail?.getOrNull()?.series?.let { app.settings.toggleFavorite(it) } },
         onBack = onBack,
@@ -195,7 +195,7 @@ fun SeriesDetailView(
                                 val meta = listOfNotNull(
                                     series.series.releaseDate?.take(4),
                                     series.series.genre,
-                                    "${series.seasons.size} temporada(s)",
+                                    t("%d temporada(s)", series.seasons.size),
                                 ).joinToString(" · ")
                                 Text(meta, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 series.series.plot?.let {
@@ -206,7 +206,7 @@ fun SeriesDetailView(
                     }
 
                     if (seasons.isEmpty()) {
-                        item { EmptyBox("Esta série está sem episódios no servidor.") }
+                        item { EmptyBox(t("Esta série está sem episódios no servidor.")) }
                         return@LazyColumn
                     }
 
@@ -227,7 +227,7 @@ fun SeriesDetailView(
                                     colors = if (number == selected) ButtonDefaults.buttonColors()
                                     else ButtonDefaults.outlinedButtonColors(),
                                 ) {
-                                    Text("Temporada $number")
+                                    Text(t("Temporada %s", number))
                                 }
                             }
                         }
@@ -241,7 +241,7 @@ fun SeriesDetailView(
                             imageUrl = episode.image ?: series.series.image,
                             subtitle = listOfNotNull(
                                 episode.durationSecs?.let { "${it / 60} min" },
-                                if (resumeMs > 0) "parou em ${formatClock(resumeMs)}" else null,
+                                if (resumeMs > 0) t("parou em %s", formatClock(resumeMs)) else null,
                             ).joinToString(" · ").ifBlank { null },
                             onClick = {
                                 // Enfileira a temporada toda a partir daqui,
@@ -277,7 +277,7 @@ private fun DetailScaffold(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBack, modifier = Modifier.focusRing()) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("Voltar"))
             }
             Text(
                 text = title,
@@ -290,7 +290,7 @@ private fun DetailScaffold(
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite
                     else Icons.Default.FavoriteBorder,
-                    contentDescription = "Favoritar",
+                    contentDescription = t("Favoritar"),
                     tint = if (isFavorite) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.onSurfaceVariant,
                 )

@@ -461,6 +461,6 @@ private fun toTrack(description: uk.co.caprica.vlcj.player.base.TrackDescription
         .ifEmpty { raw }
     return Track(
         id = description.id(),
-        label = if (label.equals("Disable", ignoreCase = true)) "Desligada" else label,
+        label = if (label.equals("Disable", ignoreCase = true)) br.com.iordan.ranga.pc.ui.t("Desligada") else label,
     )
 }

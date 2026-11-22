@@ -122,8 +122,8 @@ fun ErrorBox(message: String, modifier: Modifier = Modifier, onRetry: (() -> Uni
         verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(message, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-        if (onRetry != null) TextButton(onClick = onRetry) { Text("Tentar de novo") }
+        Text(t(message), color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
+        if (onRetry != null) TextButton(onClick = onRetry) { Text(t("Tentar de novo")) }
     }
 }
 

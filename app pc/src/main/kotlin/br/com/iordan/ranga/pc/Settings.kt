@@ -31,6 +31,8 @@ data class SettingsData(
     val videoMode: VideoMode = VideoMode.OVERLAY,
     val favorites: List<SavedItem> = emptyList(),
     val resume: List<ResumeEntry> = emptyList(),
+    /** "pt", "en", "ru" ou "es"; null: o do Windows (ui/Lingua.kt). */
+    val language: String? = null,
 ) {
     val favoriteKeys: Set<String> get() = favorites.map { it.key }.toSet()
 
@@ -100,6 +102,8 @@ class Settings(private val file: Path = defaultFile()) {
 
     fun clearResume() = mutate { it.copy(resume = emptyList()) }
 
+    fun setLanguage(code: String) = mutate { it.copy(language = code) }
+
     fun resumeMsFor(key: String): Long =
         _state.value.resume.firstOrNull { it.key == key }?.positionMs ?: 0L
 
@@ -128,6 +132,7 @@ class Settings(private val file: Path = defaultFile()) {
                 ?: VideoMode.OVERLAY,
             favorites = PrefsCodec.decodeFavorites(root["favorites"]?.toString()),
             resume = PrefsCodec.decodeResume(root["resume"]?.toString()),
+            language = root.str("language"),
         )
     }
 
@@ -142,6 +147,7 @@ class Settings(private val file: Path = defaultFile()) {
                 put("liveFormat", data.liveFormat.name)
                 put("userAgent", data.userAgent)
                 put("videoMode", data.videoMode.name)
+                data.language?.let { put("language", it) }
                 // Reaproveito o codec do core e re-parseio para JsonElement, em
                 // vez de enfiar a string escapada. Custa microssegundos e deixa
                 // o settings.json legível se você abrir no Bloco de Notas.

@@ -120,7 +120,7 @@ fun BrowseView(
                     modifier = Modifier.weight(1f),
                 )
                 IconButton(onClick = onOpenSettings, modifier = Modifier.focusRing()) {
-                    Icon(Icons.Default.Settings, contentDescription = "Configurações")
+                    Icon(Icons.Default.Settings, contentDescription = t("Configurações"))
                 }
             }
 
@@ -136,7 +136,7 @@ fun BrowseView(
                         else androidx.compose.ui.graphics.Color.Transparent,
                     ) {
                         Text(
-                            text = tab.label,
+                            text = t(tab.label),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
                             color = if (selected) MaterialTheme.colorScheme.primary
@@ -185,7 +185,7 @@ fun BrowseView(
             OutlinedTextField(
                 value = state.query,
                 onValueChange = model::setQuery,
-                label = { Text("Buscar em ${state.tab.label}") },
+                label = { Text(t("Buscar em %s", t(state.tab.label))) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 singleLine = true,
                 // O campo de texto come as setas (cursor): para baixo, o
@@ -206,7 +206,7 @@ fun BrowseView(
 
             if (settings.resume.isNotEmpty() && state.query.isBlank()) {
                 Text(
-                    text = "Continuar assistindo",
+                    text = t("Continuar assistindo"),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 12.dp, top = 4.dp),
@@ -253,16 +253,16 @@ fun BrowseView(
                 state.loadingItems -> LoadingBox()
 
                 shown.isEmpty() && state.query.length >= 2 -> Column {
-                    EmptyBox("Nada encontrado nas categorias já abertas.", Modifier.weight(1f))
+                    EmptyBox(t("Nada encontrado nas categorias já abertas."), Modifier.weight(1f))
                     TextButton(
                         onClick = model::indexEverything,
                         modifier = Modifier.align(Alignment.CenterHorizontally).padding(12.dp),
                     ) {
-                        Text("Carregar todas as categorias de ${state.tab.label}")
+                        Text(t("Carregar todas as categorias de %s", t(state.tab.label)))
                     }
                 }
 
-                shown.isEmpty() -> EmptyBox("Escolha uma categoria à esquerda.")
+                shown.isEmpty() -> EmptyBox(t("Escolha uma categoria à esquerda."))
 
                 state.tab == BrowseTab.LIVE && state.query.length < 2 -> LazyColumn(
                     contentPadding = PaddingValues(12.dp),
@@ -275,7 +275,7 @@ fun BrowseView(
                         ItemRow(
                             title = item.title,
                             imageUrl = item.image,
-                            subtitle = (item as? Channel)?.number?.let { "Canal $it" },
+                            subtitle = (item as? Channel)?.number?.let { t("Canal %s", it) },
                             onClick = { onOpenItems(shown, index) },
                             trailing = {
                                 IconButton(
@@ -285,7 +285,7 @@ fun BrowseView(
                                     Icon(
                                         imageVector = if (isFavorite) Icons.Default.Favorite
                                         else Icons.Default.FavoriteBorder,
-                                        contentDescription = "Favoritar",
+                                        contentDescription = t("Favoritar"),
                                         tint = if (isFavorite) MaterialTheme.colorScheme.primary
                                         else MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
@@ -326,7 +326,7 @@ private fun FreeChannelList(
     onOpen: (List<FreeChannel>, Int) -> Unit,
 ) {
     if (channels.isEmpty()) {
-        EmptyBox("Nenhum canal com esse nome.")
+        EmptyBox(t("Nenhum canal com esse nome."))
         return
     }
     LazyColumn(
@@ -336,7 +336,7 @@ private fun FreeChannelList(
     ) {
         item {
             Text(
-                text = "Canais abertos, com o stream que a própria emissora publica. Sem conta.",
+                text = t("Canais abertos, com o stream que a própria emissora publica. Sem conta."),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 6.dp),
@@ -347,7 +347,7 @@ private fun FreeChannelList(
             ItemRow(
                 title = channel.name,
                 imageUrl = channel.logo,
-                subtitle = "Stream oficial · ${channel.sourceHost}",
+                subtitle = t("Stream oficial · %s", channel.sourceHost),
                 onClick = { onOpen(channels, index) },
             )
         }
@@ -363,13 +363,12 @@ private fun LoginPrompt(onLogin: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Canais ao vivo, filmes e séries vêm da sua conta IPTV.\n" +
-                "Os canais da aba Grátis não precisam dela.",
+            text = t("Canais ao vivo, filmes e séries vêm da sua conta IPTV.\nOs canais da aba Grátis não precisam dela."),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        Button(onClick = onLogin, modifier = Modifier.focusRing()) { Text("Entrar com a conta") }
+        Button(onClick = onLogin, modifier = Modifier.focusRing()) { Text(t("Entrar com a conta")) }
     }
 }
 

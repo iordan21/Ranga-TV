@@ -74,6 +74,8 @@ private class LaunchOptions(args: Array<String>) {
     val monitor: IntArray? = args.firstOrNull { it.startsWith("--monitor=") }
         ?.substringAfter('=')?.split(',')?.mapNotNull { it.trim().toIntOrNull() }
         ?.takeIf { it.size == 4 && it[2] > 0 && it[3] > 0 }?.toIntArray()
+    /** `--idioma=pt|en|ru|es`: o idioma do Ranga EMU (ui/Lingua.kt). */
+    val language: String? = args.firstOrNull { it.startsWith("--idioma=") }?.substringAfter('=')
     val scale = args.firstOrNull { it.startsWith("--escala=") }
         ?.substringAfter('=')?.replace(',', '.')?.toFloatOrNull()?.coerceIn(1f, 2f) ?: 1f
 }
@@ -87,7 +89,7 @@ fun main(args: Array<String>) {
             height = 820.dp,
             placement = if (options.fullscreen && options.monitor == null) WindowPlacement.Fullscreen else WindowPlacement.Floating,
         )
-        val app = remember { AppState() }
+        val app = remember { AppState().also { br.com.iordan.ranga.pc.ui.Lingua.init(options.language, it.settings.current.language) } }
 
         Window(
             onCloseRequest = ::exitApplication,

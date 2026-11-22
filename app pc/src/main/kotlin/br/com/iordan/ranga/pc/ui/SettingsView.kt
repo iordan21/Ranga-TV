@@ -1,6 +1,7 @@
 package br.com.iordan.ranga.pc.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import br.com.iordan.ranga.i18n.Idioma
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -70,21 +71,33 @@ fun SettingsView(
     ) {
         Row {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("Voltar"))
             }
             Text(
-                text = "Configurações",
+                text = t("Configurações"),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(start = 8.dp),
             )
         }
 
+        Group("Idioma") {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Idioma.Lang.entries.forEach { lang ->
+                    Button(
+                        onClick = { Lingua.current = lang; app.settings.setLanguage(lang.code) },
+                        colors = if (Lingua.current == lang) ButtonDefaults.buttonColors()
+                        else ButtonDefaults.outlinedButtonColors(),
+                    ) {
+                        Text(lang.nativeName)
+                    }
+                }
+            }
+        }
+
         Group("Motor de vídeo") {
             when (VlcEngine.source) {
                 VlcEngine.Source.BUNDLED -> Text(
-                    text = "Embutido no app" +
-                        (VlcEngine.bundledVersion?.let { " — libvlc $it" } ?: "") +
-                        ". Nada para instalar.",
+                    text = t("Embutido no app%s. Nada para instalar.", VlcEngine.bundledVersion?.let { " — libvlc $it" } ?: ""),
                     color = MaterialTheme.colorScheme.primary,
                 )
 
@@ -93,19 +106,17 @@ fun SettingsView(
                 // jeito, mas quero que apareça — é a pista de por que uma
                 // máquina se comporta diferente das outras.
                 VlcEngine.Source.SYSTEM -> Text(
-                    text = "Usando o VLC instalado nesta máquina. O motor que vem " +
-                        "no pacote não foi encontrado — reinstale o Ranga se isso repetir.",
+                    text = t("Usando o VLC instalado nesta máquina. O motor que vem no pacote não foi encontrado — reinstale o Ranga se isso repetir."),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 VlcEngine.Source.NONE -> {
                     Text(
-                        "Nenhum motor de vídeo carregou. O catálogo funciona, mas nada toca. " +
-                            "Reinstale o Ranga; se continuar, instalar o VLC 64 bits resolve.",
+                        t("Nenhum motor de vídeo carregou. O catálogo funciona, mas nada toca. Reinstale o Ranga; se continuar, instalar o VLC 64 bits resolve."),
                         color = MaterialTheme.colorScheme.error,
                     )
                     Button(onClick = { openInBrowser(VlcEngine.DOWNLOAD_URL) }) {
-                        Text("Baixar o VLC")
+                        Text(t("Baixar o VLC"))
                     }
                 }
             }
@@ -120,11 +131,11 @@ fun SettingsView(
                     colors = if (selected) ButtonDefaults.buttonColors()
                     else ButtonDefaults.outlinedButtonColors(),
                 ) {
-                    Text(mode.label)
+                    Text(t(mode.label))
                 }
             }
             Text(
-                text = settings.videoMode.explanation,
+                text = t(settings.videoMode.explanation),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -133,15 +144,15 @@ fun SettingsView(
         Group("Conta", if (loggedIn) null else "Só para quem tem conta IPTV. A aba Grátis não precisa.") {
             if (!loggedIn) {
                 Button(onClick = onLogin, modifier = Modifier.width(360.dp)) {
-                    Text("Entrar com a conta")
+                    Text(t("Entrar com a conta"))
                 }
             } else {
                 Line("Servidor", settings.credentials.host)
                 Line("Usuário", settings.credentials.username)
                 account?.let {
-                    Line("Situação", it.status)
+                    Line("Situação", t(it.status))
                     it.expiresAtEpochSecs?.let { exp -> Line("Vence em", formatDate(exp)) }
-                    Line("Conexões", "${it.activeConnections ?: 0} de ${it.maxConnections ?: "?"} em uso")
+                    Line("Conexões", t("%s de %s em uso", it.activeConnections ?: 0, it.maxConnections ?: "?"))
                 }
             }
         }
@@ -179,14 +190,14 @@ fun SettingsView(
 
         Group("Dados", if (loggedIn) "Sair apaga só a credencial. Favoritos e histórico ficam." else null) {
             Text(
-                text = "Arquivo: ${br.com.iordan.ranga.pc.Settings.defaultFile()}",
+                text = t("Arquivo: %s", br.com.iordan.ranga.pc.Settings.defaultFile()),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             // O caminho do log fica à vista porque ele só serve se a pessoa
             // souber onde está na hora em que algo deu errado.
             Text(
-                text = "Log do motor de vídeo: ${PlayerLog.FILE}",
+                text = t("Log do motor de vídeo: %s", PlayerLog.FILE),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -194,7 +205,7 @@ fun SettingsView(
                 onClick = { app.settings.clearResume() },
                 modifier = Modifier.width(360.dp),
             ) {
-                Text("Limpar \"continuar assistindo\"")
+                Text(t("Limpar \"continuar assistindo\""))
             }
             if (loggedIn) {
                 Button(
@@ -209,7 +220,7 @@ fun SettingsView(
                         contentColor = MaterialTheme.colorScheme.onError,
                     ),
                 ) {
-                    Text("Sair da conta")
+                    Text(t("Sair da conta"))
                 }
             }
         }
@@ -242,7 +253,7 @@ private fun ServersGroup(app: AppState, settings: SettingsData) {
     } catch (e: XtreamException) {
         ServerCheck.Failed(e.userMessage)
     } catch (e: Exception) {
-        ServerCheck.Failed(e.message ?: "Não respondeu.")
+        ServerCheck.Failed(e.message ?: t("Não respondeu."))
     }
 
     Group(
@@ -266,7 +277,7 @@ private fun ServersGroup(app: AppState, settings: SettingsData) {
                                 app.catalog.invalidate()
                                 app.settings.setHost(host)
                             } else if (result is ServerCheck.Failed) {
-                                message = "Continua no atual. $host: ${result.message}"
+                                message = t("Continua no atual. %s: %s", host, t(result.message))
                             }
                             checks = checks + (host to result)
                             switchingTo = null
@@ -278,14 +289,14 @@ private fun ServersGroup(app: AppState, settings: SettingsData) {
                     else ButtonDefaults.outlinedButtonColors(),
                 ) {
                     Column(Modifier.fillMaxWidth()) {
-                        Text(if (active) "$host  (em uso)" else host)
+                        Text(if (active) t("%s  (em uso)", host) else host)
                         when (val c = checks[host]) {
                             null -> Unit
-                            ServerCheck.Testing -> Text("testando…", style = MaterialTheme.typography.bodySmall)
+                            ServerCheck.Testing -> Text(t("testando…"), style = MaterialTheme.typography.bodySmall)
                             is ServerCheck.Ok ->
-                                Text("respondeu em ${c.millis} ms", style = MaterialTheme.typography.bodySmall)
+                                Text(t("respondeu em %d ms", c.millis), style = MaterialTheme.typography.bodySmall)
                             is ServerCheck.Failed ->
-                                Text("falhou: ${c.message}", style = MaterialTheme.typography.bodySmall)
+                                Text(t("falhou: %s", t(c.message)), style = MaterialTheme.typography.bodySmall)
                         }
                     }
                 }
@@ -297,7 +308,7 @@ private fun ServersGroup(app: AppState, settings: SettingsData) {
                         },
                         enabled = switchingTo == null,
                     ) {
-                        Text("Remover")
+                        Text(t("Remover"))
                     }
                 }
             }
@@ -320,14 +331,14 @@ private fun ServersGroup(app: AppState, settings: SettingsData) {
             enabled = switchingTo == null,
             modifier = Modifier.width(360.dp),
         ) {
-            Text("Testar todos")
+            Text(t("Testar todos"))
         }
 
         OutlinedTextField(
             value = newServer,
             onValueChange = { newServer = it; message = null },
-            label = { Text("Adicionar DNS") },
-            placeholder = { Text("Cole um ou mais endereços, um por linha") },
+            label = { Text(t("Adicionar DNS")) },
+            placeholder = { Text(t("Cole um ou mais endereços, um por linha")) },
             maxLines = 5,
             modifier = Modifier.width(360.dp),
         )
@@ -335,7 +346,7 @@ private fun ServersGroup(app: AppState, settings: SettingsData) {
             onClick = {
                 val parsed = PrefsCodec.parseServers(newServer)
                 if (parsed.isEmpty()) {
-                    message = "Nenhum endereço válido no que foi digitado."
+                    message = t("Nenhum endereço válido no que foi digitado.")
                 } else {
                     app.settings.addServers(parsed)
                     newServer = ""
@@ -344,7 +355,7 @@ private fun ServersGroup(app: AppState, settings: SettingsData) {
             enabled = newServer.isNotBlank(),
             modifier = Modifier.width(360.dp),
         ) {
-            Text("Adicionar")
+            Text(t("Adicionar"))
         }
         message?.let { Text(it, color = MaterialTheme.colorScheme.error) }
     }
@@ -354,13 +365,13 @@ private fun ServersGroup(app: AppState, settings: SettingsData) {
 private fun Group(title: String, hint: String? = null, content: @Composable () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
-            text = title.uppercase(),
+            text = t(title).uppercase(),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
         )
         if (hint != null) {
             Text(
-                text = hint,
+                text = t(hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -372,7 +383,7 @@ private fun Group(title: String, hint: String? = null, content: @Composable () -
 @Composable
 private fun Line(label: String, value: String) {
     Row(Modifier.width(420.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label)
+        Text(t(label))
         Text(value, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

@@ -47,12 +47,12 @@ fun LoginView(app: AppState, onLoggedIn: () -> Unit, onBack: () -> Unit) {
         if (loading) return
         val creds = Credentials(host.trim(), username.trim(), password.trim())
         if (!creds.isComplete) {
-            error = "Preencha servidor, usuário e senha."
+            error = t("Preencha servidor, usuário e senha.")
             return
         }
         val normalized = XtreamUrls.normalizeHost(creds.host)
         if (normalized == null) {
-            error = "Endereço do servidor inválido."
+            error = t("Endereço do servidor inválido.")
             return
         }
         loading = true
@@ -70,7 +70,7 @@ fun LoginView(app: AppState, onLoggedIn: () -> Unit, onBack: () -> Unit) {
             } catch (e: XtreamException) {
                 error = e.userMessage
             } catch (e: Exception) {
-                error = e.message ?: "Falha inesperada."
+                error = e.message ?: t("Falha inesperada.")
             } finally {
                 loading = false
             }
@@ -94,7 +94,7 @@ fun LoginView(app: AppState, onLoggedIn: () -> Unit, onBack: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             )
             Text(
-                text = "Dados do painel da sua conta IPTV. A aba Grátis funciona sem isto.",
+                text = t("Dados do painel da sua conta IPTV. A aba Grátis funciona sem isto."),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -103,7 +103,7 @@ fun LoginView(app: AppState, onLoggedIn: () -> Unit, onBack: () -> Unit) {
             OutlinedTextField(
                 value = host,
                 onValueChange = { host = it; error = null },
-                label = { Text("Servidor") },
+                label = { Text(t("Servidor")) },
                 placeholder = { Text("http://seu-painel.exemplo:80") },
                 singleLine = true,
                 enabled = !loading,
@@ -112,7 +112,7 @@ fun LoginView(app: AppState, onLoggedIn: () -> Unit, onBack: () -> Unit) {
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it; error = null },
-                label = { Text("Usuário") },
+                label = { Text(t("Usuário")) },
                 singleLine = true,
                 enabled = !loading,
                 modifier = Modifier.fillMaxWidth(),
@@ -120,20 +120,20 @@ fun LoginView(app: AppState, onLoggedIn: () -> Unit, onBack: () -> Unit) {
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it; error = null },
-                label = { Text("Senha") },
+                label = { Text(t("Senha")) },
                 singleLine = true,
                 enabled = !loading,
                 visualTransformation = if (showPassword) VisualTransformation.None
                 else PasswordVisualTransformation(),
                 trailingIcon = {
                     TextButton(onClick = { showPassword = !showPassword }) {
-                        Text(if (showPassword) "Ocultar" else "Ver")
+                        Text(if (showPassword) t("Ocultar") else t("Ver"))
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
             error?.let {
-                Text(it, color = MaterialTheme.colorScheme.error)
+                Text(t(it), color = MaterialTheme.colorScheme.error)
             }
             Button(
                 onClick = { submit() },
@@ -147,7 +147,7 @@ fun LoginView(app: AppState, onLoggedIn: () -> Unit, onBack: () -> Unit) {
                         color = MaterialTheme.colorScheme.onPrimary,
                     )
                 } else {
-                    Text("Entrar")
+                    Text(t("Entrar"))
                 }
             }
             // Entrar é opcional; o botão deixa isso explícito e dá a saída.
@@ -156,7 +156,7 @@ fun LoginView(app: AppState, onLoggedIn: () -> Unit, onBack: () -> Unit) {
                 enabled = !loading,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Voltar")
+                Text(t("Voltar"))
             }
         }
     }

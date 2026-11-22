@@ -384,12 +384,12 @@ private fun AcceleratedPlayer(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Text(
-                    text = message,
+                    text = t(message),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.weight(1f),
                 )
-                Button(onClick = onRetry) { Text("Tentar de novo") }
+                Button(onClick = onRetry) { Text(t("Tentar de novo")) }
             }
 
             playback.reconnectAttempt > 0 -> Text(
@@ -477,8 +477,8 @@ private fun StatusOverlay(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(text = message, color = Color.White)
-            Button(onClick = onRetry) { Text("Tentar de novo") }
+            Text(text = t(message), color = Color.White)
+            Button(onClick = onRetry) { Text(t("Tentar de novo")) }
         }
 
         playback.reconnectAttempt > 0 -> Column(
@@ -539,12 +539,12 @@ private fun PlayerControls(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             IconButton(onClick = onExit) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = tint)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("Voltar"), tint = tint)
             }
             IconButton(onClick = { controller.togglePause() }) {
                 Icon(
                     imageVector = if (playback.playing) RangaIcons.Pause else Icons.Default.PlayArrow,
-                    contentDescription = if (playback.playing) "Pausar" else "Tocar",
+                    contentDescription = if (playback.playing) t("Pausar") else t("Tocar"),
                     tint = tint,
                 )
             }
@@ -552,14 +552,14 @@ private fun PlayerControls(
                 IconButton(onClick = onPrevious) {
                     Icon(
                         Icons.Default.KeyboardArrowUp,
-                        contentDescription = "Canal anterior",
+                        contentDescription = t("Canal anterior"),
                         tint = tint,
                     )
                 }
                 IconButton(onClick = onNext) {
                     Icon(
                         Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Próximo canal",
+                        contentDescription = t("Próximo canal"),
                         tint = tint,
                     )
                 }
@@ -609,7 +609,7 @@ private fun PlayerControls(
             // faixa de áudio e nenhuma legenda não ganha dois botões inúteis.
             TrackMenu(
                 icon = RangaIcons.AudioTrack,
-                label = "Áudio",
+                label = t("Áudio"),
                 tracks = playback.audioTracks,
                 selected = playback.audioTrack,
                 tint = tint,
@@ -617,14 +617,14 @@ private fun PlayerControls(
             )
             TrackMenu(
                 icon = RangaIcons.ClosedCaption,
-                label = "Legenda",
+                label = t("Legenda"),
                 tracks = playback.subtitleTracks,
                 selected = playback.subtitleTrack,
                 tint = tint,
                 onSelect = { controller.setSubtitleTrack(it) },
             )
 
-            Icon(RangaIcons.VolumeUp, contentDescription = "Volume", tint = tint)
+            Icon(RangaIcons.VolumeUp, contentDescription = t("Volume"), tint = tint)
             Slider(
                 value = playback.volume.toFloat(),
                 valueRange = 0f..100f,
@@ -636,7 +636,7 @@ private fun PlayerControls(
                 Icon(
                     imageVector = if (isFullscreen) RangaIcons.FullscreenExit
                     else RangaIcons.Fullscreen,
-                    contentDescription = "Tela cheia",
+                    contentDescription = t("Tela cheia"),
                     tint = tint,
                 )
             }
@@ -687,7 +687,7 @@ private fun TrackMenu(
     }
 }
 
-private fun reconnectLabel(attempt: Int) = "Caiu. Reconectando ($attempt de 3)…"
+private fun reconnectLabel(attempt: Int) = t("Caiu. Reconectando (%d de 3)…", attempt)
 
 /**
  * A frase que o usuário lê quando o player desiste.
@@ -715,9 +715,10 @@ private fun failureMessage(app: AppState, playback: PlaybackState): String? {
         val max = account.maxConnections ?: return@LaunchedEffect
         val active = account.activeConnections ?: return@LaunchedEffect
         if (max in 1..active) {
-            connectionLimit = "Seu plano permite $max conexão(ões) ao mesmo tempo, e " +
-                "$active já está(ão) em uso. Feche o Ranga nos outros aparelhos e tente " +
-                "de novo."
+            connectionLimit = t(
+                "Seu plano permite %d conexão(ões) ao mesmo tempo, e %d já está(ão) em uso. Feche o Ranga nos outros aparelhos e tente de novo.",
+                max, active,
+            )
         }
     }
 
@@ -726,12 +727,10 @@ private fun failureMessage(app: AppState, playback: PlaybackState): String? {
 
     return when (failure) {
         PlaybackFailure.OPEN_FAILED ->
-            "Não deu para abrir. Tentei três vezes, nos dois formatos. O canal pode " +
-                "estar fora do ar; se todos falharem, é o servidor."
+            t("Não deu para abrir. Tentei três vezes, nos dois formatos. O canal pode estar fora do ar; se todos falharem, é o servidor.")
 
         PlaybackFailure.STALLED ->
-            "O canal parou de responder e não voltou em três tentativas. Costuma ser " +
-                "queda do lado do provedor."
+            t("O canal parou de responder e não voltou em três tentativas. Costuma ser queda do lado do provedor.")
     }
 }
 
@@ -753,16 +752,14 @@ private fun EngineMissingView(onExit: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("O motor de vídeo não carregou", style = MaterialTheme.typography.titleLarge)
+        Text(t("O motor de vídeo não carregou"), style = MaterialTheme.typography.titleLarge)
         Text(
-            text = "O Ranga já vem com o motor de vídeo dentro dele, então isto quer dizer " +
-                "que a instalação está incompleta — o antivírus é o suspeito mais comum. " +
-                "Reinstalar o Ranga resolve. Instalar o VLC 64 bits também serve de quebra-galho.",
+            text = t("O Ranga já vem com o motor de vídeo dentro dele, então isto quer dizer que a instalação está incompleta — o antivírus é o suspeito mais comum. Reinstalar o Ranga resolve. Instalar o VLC 64 bits também serve de quebra-galho."),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { openInBrowser(VlcEngine.DOWNLOAD_URL) }) { Text("Baixar o VLC") }
-            Button(onClick = onExit) { Text("Voltar") }
+            Button(onClick = { openInBrowser(VlcEngine.DOWNLOAD_URL) }) { Text(t("Baixar o VLC")) }
+            Button(onClick = onExit) { Text(t("Voltar")) }
         }
     }
 }
