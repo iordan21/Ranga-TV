@@ -167,6 +167,26 @@ object Gamepad {
     }
 
     /**
+     * Põe a janela no meio do monitor dado (x, y, largura, altura em pixels do
+     * Windows, como o Ranga EMU manda). Pelo Win32 e não pelo AWT: os números
+     * vêm em pixels físicos, e o AWT mede em pixels já escalados pelo zoom de
+     * cada monitor, que podem ser diferentes entre a TV e o monitor.
+     */
+    fun moveToMonitor(window: Window, monitor: IntArray) {
+        runCatching {
+            val user32 = User32.INSTANCE
+            val hwnd = WinDef.HWND(Native.getWindowPointer(window))
+            val rect = WinDef.RECT()
+            user32.GetWindowRect(hwnd, rect)
+            val width = minOf(rect.right - rect.left, monitor[2])
+            val height = minOf(rect.bottom - rect.top, monitor[3])
+            val x = monitor[0] + (monitor[2] - width) / 2
+            val y = monitor[1] + (monitor[3] - height) / 2
+            user32.SetWindowPos(hwnd, null, x, y, width, height, 0x0004 /* SWP_NOZORDER */)
+        }
+    }
+
+    /**
      * O passo "foto" do teste: o que o próprio Skia desenhou na janela do Ranga
      * TV (SkiaLayer.screenshot), ao lado do log como foto-N.png. Nunca a tela:
      * a janela de teste abre atrás das outras, e uma foto da tela pegaria o que

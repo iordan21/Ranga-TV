@@ -66,6 +66,14 @@ private sealed interface Screen {
 private class LaunchOptions(args: Array<String>) {
     val fromEmu = "--ranga-emu" in args
     val fullscreen = "--tela-cheia" in args
+    /**
+     * `--monitor=x,y,largura,altura`: o monitor do Ranga EMU, em pixels do
+     * Windows. Sem isto o Windows abre a janela no monitor principal, que pode
+     * não ser a TV onde o EMU está.
+     */
+    val monitor: IntArray? = args.firstOrNull { it.startsWith("--monitor=") }
+        ?.substringAfter('=')?.split(',')?.mapNotNull { it.trim().toIntOrNull() }
+        ?.takeIf { it.size == 4 && it[2] > 0 && it[3] > 0 }?.toIntArray()
     val scale = args.firstOrNull { it.startsWith("--escala=") }
         ?.substringAfter('=')?.replace(',', '.')?.toFloatOrNull()?.coerceIn(1f, 2f) ?: 1f
 }
@@ -77,7 +85,7 @@ fun main(args: Array<String>) {
         val windowState = rememberWindowState(
             width = 1360.dp,
             height = 820.dp,
-            placement = if (options.fullscreen) WindowPlacement.Fullscreen else WindowPlacement.Floating,
+            placement = if (options.fullscreen && options.monitor == null) WindowPlacement.Fullscreen else WindowPlacement.Floating,
         )
         val app = remember { AppState() }
 
@@ -88,7 +96,11 @@ fun main(args: Array<String>) {
         ) {
             // Aberto pelo Ranga EMU: vem para a frente, senão o controle não chega.
             if (options.fromEmu) {
-                androidx.compose.runtime.LaunchedEffect(Unit) { Gamepad.bringToFront(window) }
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    options.monitor?.let { Gamepad.moveToMonitor(window, it) }
+                    if (options.fullscreen && options.monitor != null) windowState.placement = WindowPlacement.Fullscreen
+                    Gamepad.bringToFront(window)
+                }
             }
             val density = LocalDensity.current
             CompositionLocalProvider(

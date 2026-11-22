@@ -9,7 +9,7 @@ plugins {
     id("org.jetbrains.compose") version "1.9.3"
 }
 
-val appVersion = "1.2.0"
+val appVersion = "1.2.1"
 
 kotlin {
     jvmToolchain(21)

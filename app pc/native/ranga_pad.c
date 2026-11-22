@@ -13,6 +13,7 @@
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <stdlib.h>
+#include <windows.h>
 
 #define RANGA_PAD_MAX 8
 
@@ -39,6 +40,11 @@ static int start(void) {
     // A janela do Ranga TV não é do SDL: sem esta dica ele só lê o controle
     // quando uma janela dele está em primeiro plano, isto é, nunca.
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+    // Sem janela do SDL ninguém processa as mensagens do Windows nesta thread,
+    // e é por elas que chegam os botões da entrada bruta (RawInput): o
+    // controle aparecia ligado e nenhum botão respondia. Com esta dica o SDL
+    // cuida delas numa thread própria; ranga_pad_poll ainda esvazia a fila.
+    SDL_SetHint(SDL_HINT_JOYSTICK_THREAD, "1");
     // Como no Ranga EMU: procurar controle pelo DirectInput custa uns 300 ms e
     // só controle genérico antigo precisa dele; entra só se a primeira busca
     // não achar nada.
@@ -65,6 +71,13 @@ __declspec(dllexport) int ranga_pad_poll(void) {
     if (!started) {
         if (!start()) return -1;
         started = 1;
+    }
+    // As mensagens do Windows desta thread (a janela escondida que o SDL cria
+    // para saber de controle ligado e desligado).
+    MSG message;
+    while (PeekMessageW(&message, NULL, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&message);
+        DispatchMessageW(&message);
     }
     SDL_Event event;
     int changed = 0;
@@ -96,6 +109,25 @@ __declspec(dllexport) int ranga_pad_poll(void) {
         if (SDL_GameControllerGetButton(pad, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)) bits |= 1 << 11;
     }
     return bits;
+}
+
+/*
+ * Para diagnóstico: o que o SDL está vendo (aparelhos, nomes, caminho e quantos
+ * botões cada um tem apertados agora, contados direto no joystick).
+ */
+__declspec(dllexport) int ranga_pad_info(char* out, int size) {
+    if (!started || out == NULL || size <= 0) return 0;
+    int used = SDL_snprintf(out, size, "joysticks=%d abertos=%d", SDL_NumJoysticks(), count);
+    for (int i = 0; i < count && used < size; ++i) {
+        SDL_Joystick* stick = SDL_GameControllerGetJoystick(pads[i]);
+        int down = 0;
+        for (int b = 0; b < SDL_JoystickNumButtons(stick); ++b) down += SDL_JoystickGetButton(stick, b);
+        used += SDL_snprintf(out + used, size - used, " | %s (%s) tipo=%d botoes_apertados=%d",
+                             SDL_GameControllerName(pads[i]) ? SDL_GameControllerName(pads[i]) : "?",
+                             SDL_GameControllerPath(pads[i]) ? SDL_GameControllerPath(pads[i]) : "?",
+                             (int)SDL_GameControllerGetType(pads[i]), down);
+    }
+    return used;
 }
 
 /* Solta os controles (o Ranga TV fechando). */
