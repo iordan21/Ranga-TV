@@ -1,0 +1,19 @@
+*.iml
+.gradle
+.kotlin
+/local.properties
+/.idea
+.DS_Store
+/build
+# Saída da task `dist` — é regenerável, não versiono binário.
+/dist
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Chave de assinatura e senhas. Nunca versionar: quem tem o .jks e a senha
+# consegue publicar um APK que se passa pelo seu.
+/keystore.properties
+*.jks
+*.keystore

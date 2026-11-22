@@ -1,0 +1,37 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Tudo desenhado dentro do quadrado central 72x72 (offset 18),
+         que e a "zona segura" do adaptive icon: o launcher pode recortar
+         o resto em circulo, squircle etc. sem cortar o desenho. -->
+
+    <!-- Corpo da TV -->
+    <path
+        android:fillColor="#3DDC97"
+        android:pathData="M26,36 h56 a6,6 0 0 1 6,6 v30 a6,6 0 0 1 -6,6 h-56 a6,6 0 0 1 -6,-6 v-30 a6,6 0 0 1 6,-6 z" />
+    <!-- Tela -->
+    <path
+        android:fillColor="#0E1116"
+        android:pathData="M27,43 h54 v28 h-54 z" />
+    <!-- Play -->
+    <path
+        android:fillColor="#3DDC97"
+        android:pathData="M47,49 L64,57 L47,65 z" />
+    <!-- Antenas -->
+    <path
+        android:fillColor="#3DDC97"
+        android:pathData="M52,36 L38,24 L42,20 L56,33 z" />
+    <path
+        android:fillColor="#3DDC97"
+        android:pathData="M56,36 L70,24 L66,20 L52,33 z" />
+    <!-- Pes -->
+    <path
+        android:fillColor="#3DDC97"
+        android:pathData="M34,78 h8 v6 h-8 z" />
+    <path
+        android:fillColor="#3DDC97"
+        android:pathData="M66,78 h8 v6 h-8 z" />
+</vector>

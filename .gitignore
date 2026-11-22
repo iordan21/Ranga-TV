@@ -1,0 +1,49 @@
+# ---------------------------------------------------------------------------
+# Saída de build. Regenerável, e some com `clean`.
+# ---------------------------------------------------------------------------
+build/
+.gradle/
+.kotlin/
+.cxx/
+.externalNativeBuild/
+
+# ---------------------------------------------------------------------------
+# Coisas desta máquina, não do projeto.
+# ---------------------------------------------------------------------------
+.idea/
+*.iml
+local.properties
+.DS_Store
+/.claude/
+*.log
+hs_err_pid*
+
+# ---------------------------------------------------------------------------
+# Assinatura. Quem tem o .jks e a senha assina um APK que se passa pelo seu,
+# e o Android instala por cima do original sem reclamar. Nunca versionar.
+# Como gerar a chave: "app tv/ASSINATURA.md".
+# ---------------------------------------------------------------------------
+keystore.properties
+*.jks
+*.keystore
+
+# ---------------------------------------------------------------------------
+# Entrega. Binário não entra em repositório de código — sai de `gradlew dist`
+# a qualquer momento, e versionado só incha o histórico para sempre.
+# ---------------------------------------------------------------------------
+dist/
+*.apk
+*.aab
+*.msi
+
+# ---------------------------------------------------------------------------
+# Dependência de terceiro, baixada — não é código deste projeto.
+# ---------------------------------------------------------------------------
+# libvlc: a task `vlcRuntime` baixa do VideoLAN e confere o SHA-256.
+app pc/resources/windows-x64/vlc/
+
+# WiX 3.14, ferramenta do instalador. O GerarMsi.bat avisa onde baixar.
+tools/
+
+# App de Windows já montado — saída de `gradlew dist`.
+Ranga-PC/

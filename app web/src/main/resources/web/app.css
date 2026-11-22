@@ -1,0 +1,191 @@
+/* Ranga Web — feito para ser lido do sofá: letra grande, foco bem visível. */
+
+:root {
+  --bg: #111318;
+  --surface: #1b1f27;
+  --surface-2: #262b35;
+  --text: #e6e8ec;
+  --muted: #9aa1ad;
+  --primary: #72d99e;
+  --on-primary: #0d2a1a;
+  --error: #ff8a80;
+  --focus: #72d99e;
+  font-size: clamp(15px, 1.05vw + 8px, 22px);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body { min-height: 100vh; }
+
+#top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  padding: .75rem 1rem;
+  background: var(--surface);
+}
+
+#top .brand {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-right: 1rem;
+}
+
+#top .spacer { flex: 1; }
+
+/* clip, e não hidden: hidden transformaria o main num contêiner de rolagem e
+   quebraria a barra fixa do topo. O cartão focado cresce 4% e, sem isto,
+   criava uma barra de rolagem lateral. */
+main { padding: 1rem; overflow-x: clip; }
+
+h1 { font-size: 1.4rem; margin: .25rem 0 1rem; }
+h2 { font-size: 1.1rem; margin: 1.25rem 0 .5rem; color: var(--muted); }
+
+.hint { color: var(--muted); }
+.error { color: var(--error); }
+
+/* ----------------------------------------------------------- focáveis */
+
+.f {
+  cursor: pointer;
+  outline: none;
+  border: 3px solid transparent;
+  border-radius: 10px;
+  transition: transform .12s ease, border-color .12s ease;
+}
+
+.f:focus, .f:focus-visible {
+  border-color: var(--focus);
+  transform: scale(1.04);
+}
+
+button.f, a.f.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .55rem 1rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface-2);
+  text-decoration: none;
+}
+
+button.f.primary { background: var(--primary); color: var(--on-primary); font-weight: 600; }
+button.f.danger { background: #5a1f1f; }
+button.f.tab.active { background: var(--primary); color: var(--on-primary); }
+button.f:disabled { opacity: .5; cursor: default; }
+
+/* -------------------------------------------------------------- grades */
+
+.grid {
+  display: grid;
+  gap: .9rem;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+}
+
+.grid.posters { grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); }
+
+.card {
+  display: block;
+  padding: 1rem;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  font-size: .95rem;
+}
+
+.poster { background: var(--surface); padding: 0; overflow: hidden; }
+.poster img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; background: var(--surface-2); }
+.poster span {
+  display: block;
+  padding: .4rem .5rem;
+  font-size: .85rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list { display: flex; flex-direction: column; gap: .5rem; max-width: 60rem; }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  padding: .5rem;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* Linha ocupa a largura toda: crescer 4% passaria da borda da tela. */
+.row.f:focus { transform: none; background: var(--surface-2); }
+
+.row img, .row .noimg {
+  width: 3.2rem;
+  height: 3.2rem;
+  object-fit: contain;
+  border-radius: 6px;
+  background: var(--surface-2);
+  flex: none;
+}
+
+.row .t { display: flex; flex-direction: column; min-width: 0; }
+.row .t b { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .t small { color: var(--muted); }
+
+/* ------------------------------------------------------------ formulários */
+
+form, .panel { display: flex; flex-direction: column; gap: .8rem; max-width: 30rem; }
+.panel.wide { max-width: 60rem; margin-bottom: 1rem; }
+.actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+
+label { display: flex; flex-direction: column; gap: .3rem; color: var(--muted); font-size: .9rem; }
+
+input, textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--surface-2);
+  border-radius: 8px;
+  padding: .6rem .7rem;
+}
+
+input:focus, textarea:focus { border-color: var(--focus); outline: none; }
+
+.server { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.server .name { flex: 1; min-width: 12rem; }
+.server small { color: var(--muted); display: block; }
+
+/* ---------------------------------------------------------------- player */
+
+.player { position: fixed; inset: 0; z-index: 5; background: #000; }
+.player video { width: 100%; height: 100%; background: #000; }
+
+.player .overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .85));
+  transition: opacity .3s;
+}
+
+.player .overlay.hidden { opacity: 0; pointer-events: none; }
+.player .overlay h1 { margin: 0 0 .4rem; }
+.player .overlay .actions { display: flex; gap: .6rem; margin-top: .6rem; flex-wrap: wrap; }
+
+.sentinel { height: 1px; }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Painel Xtream roda em http:// puro (porta 80). Desde o Android 9 o sistema
+  bloqueia trafego em texto claro por padrao, entao sem isto aqui o app so
+  daria "Unable to connect".
+
+  Deixamos liberado no base-config (e nao so para um dominio) porque o host
+  do painel e configuravel na tela de login - se voce trocar de servidor,
+  nao precisa mexer no app. O custo: qualquer trafego http do app e
+  interceptavel na rede. Como so trafega catalogo e video da sua assinatura,
+  e um risco aceitavel; a senha nunca sai daqui por outro canal.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

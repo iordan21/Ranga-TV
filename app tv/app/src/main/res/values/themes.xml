@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+      Tema Android "burro" de proposito: quem pinta a UI e o Compose
+      (ui/theme/Theme.kt). Este XML so evita o flash branco entre o
+      splash do sistema e o primeiro frame do Compose, e tira a ActionBar.
+      Herdamos de android:Theme.Material para nao precisar arrastar
+      a dependencia do AppCompat/Material Components so por causa disso.
+    -->
+    <style name="Theme.Ranga" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/ranga_background</item>
+        <item name="android:statusBarColor">@color/ranga_background</item>
+        <item name="android:navigationBarColor">@color/ranga_background</item>
+    </style>
+
+    <!-- Player: fundo preto puro e sem barra de status. -->
+    <style name="Theme.Ranga.Player" parent="android:Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+    </style>
+
+</resources>
