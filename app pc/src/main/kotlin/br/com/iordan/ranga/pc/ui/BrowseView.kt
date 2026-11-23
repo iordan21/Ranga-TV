@@ -347,6 +347,7 @@ private fun FreeChannelList(
             ItemRow(
                 title = channel.name,
                 imageUrl = channel.logo,
+                logoPlate = true,
                 subtitle = t("Stream oficial · %s", channel.sourceHost),
                 onClick = { onOpen(channels, index) },
             )

@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import br.com.iordan.ranga.data.initials
 import coil3.compose.AsyncImage
 
 /**
@@ -103,6 +104,36 @@ fun RemoteImage(url: String?, contentDescription: String?, modifier: Modifier = 
                 model = url,
                 contentDescription = contentDescription,
                 modifier = Modifier.fillMaxSize(),
+            )
+        }
+    }
+}
+
+/**
+ * Quadrado do logo numa linha. Enquanto a imagem não aparece, ou se ela não
+ * vier, ficam as iniciais do canal. [plate] põe uma placa clara atrás: logo de
+ * emissora aberta é feito para fundo branco e some no escuro.
+ */
+@Composable
+private fun RowLogo(url: String?, title: String, plate: Boolean, modifier: Modifier) {
+    var loaded by remember(url) { mutableStateOf(false) }
+    val background = if (plate && loaded) Color(0xFFF4F6F8) else MaterialTheme.colorScheme.surfaceVariant
+    Box(modifier.background(background), contentAlignment = Alignment.Center) {
+        if (!loaded) {
+            Text(
+                text = initials(title),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+            )
+        }
+        if (!url.isNullOrBlank()) {
+            AsyncImage(
+                model = url,
+                contentDescription = null,
+                onSuccess = { loaded = true },
+                onError = { loaded = false },
+                modifier = Modifier.fillMaxSize().padding(if (plate) 3.dp else 0.dp),
             )
         }
     }
@@ -183,6 +214,7 @@ fun ItemRow(
     subtitle: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    logoPlate: Boolean = false,
     trailing: @Composable (() -> Unit)? = null,
 ) {
     HoverCard(onClick = onClick, modifier = modifier.fillMaxWidth(), label = title) {
@@ -191,7 +223,7 @@ fun ItemRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            RemoteImage(imageUrl, null, Modifier.size(40.dp).clip(RoundedCornerShape(5.dp)))
+            RowLogo(imageUrl, title, logoPlate, Modifier.size(40.dp).clip(RoundedCornerShape(5.dp)))
             Column(Modifier.weight(1f)) {
                 Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (!subtitle.isNullOrBlank()) {

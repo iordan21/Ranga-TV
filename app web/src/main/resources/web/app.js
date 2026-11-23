@@ -64,6 +64,23 @@ function img(src) {
   });
 }
 
+// Logo numa linha de canal: as iniciais ficam por baixo até a imagem aparecer.
+function initials(name) {
+  const w = String(name || '').split(/[ \-|:.]+/).map((x) => x.replace(/[^\p{L}\p{N}]/gu, '')).filter(Boolean);
+  return (w.length > 1 ? w[0][0] + w[1][0] : (w[0] || '').slice(0, 2)).toUpperCase();
+}
+function logo(src, title, plate) {
+  const box = h('span', { class: 'logo' }, initials(title));
+  if (!src) return box;
+  const im = h('img', {
+    src, alt: '', decoding: 'async', referrerpolicy: 'no-referrer',
+    onload: () => { box.classList.add(plate ? 'plate' : 'on'); },
+    onerror: () => { im.remove(); },
+  });
+  box.append(im);
+  return box;
+}
+
 async function api(path, body) {
   const opts = body === undefined ? {} : {
     method: 'POST',
@@ -320,7 +337,7 @@ async function viewHome(tab) {
         h('p', { class: 'hint' }, 'Canais abertos, com o stream que a própria emissora publica. Sem conta.'),
         h('div', { class: 'list' }, channels.map((c, i) => h('a', {
           class: 'f row', href: '#', onclick: (e) => { e.preventDefault(); play(queue, i); },
-        }, img(c.image), h('span', { class: 't' }, h('b', {}, c.title), h('small', {}, queue[i].subtitle))))),
+        }, logo(c.image, c.title, true), h('span', { class: 't' }, h('b', {}, c.title), h('small', {}, queue[i].subtitle))))),
       );
     } catch (err) { failure(err, () => viewHome(tab)); }
     return;
@@ -361,7 +378,7 @@ async function viewCategory(section, id) {
       show(h('h1', {}, name), list);
       fillIncrementally(list, items, (c, i) => h('a', {
         class: 'f row', href: '#', onclick: (e) => { e.preventDefault(); play(queue, i); },
-      }, img(c.image), h('span', { class: 't' }, h('b', {}, c.title), queue[i].subtitle && h('small', {}, queue[i].subtitle))));
+      }, logo(c.image, c.title), h('span', { class: 't' }, h('b', {}, c.title), queue[i].subtitle && h('small', {}, queue[i].subtitle))));
     } else {
       const grid = h('div', { class: 'grid posters' });
       show(h('h1', {}, name), grid);

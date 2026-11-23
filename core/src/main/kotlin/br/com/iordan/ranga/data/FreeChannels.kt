@@ -18,6 +18,7 @@ data class FreeChannel(
     val name: String,
     /** HLS (.m3u8). */
     val url: String,
+    /** Imagem do próprio site do canal. Sem ela, a linha mostra [initials]. */
     val logo: String?,
     /** Página oficial de onde a URL saiu. */
     val source: String,
@@ -55,7 +56,7 @@ object FreeChannels {
             id = "canalgov",
             name = "Canal Gov",
             url = "https://canalgov-stream.ebc.com.br/index.m3u8",
-            logo = null,
+            logo = "https://canalgov.ebc.com.br/++plone++ebc.canalgov/apple-touch-icon.png",
             source = "https://aovivo.ebc.com.br/embed-canalgov.html",
             checkedOn = "2026-11-10",
         ),
@@ -63,7 +64,7 @@ object FreeChannels {
             id = "canaleducacao",
             name = "Canal Educação",
             url = "https://canaleducacao-stream.ebc.com.br/index.m3u8",
-            logo = null,
+            logo = "https://canaleducacao.ebc.com.br/++plone++ebc.canaleducacao/images/barceloneta-apple-touch-icon-144x144-precomposed.png",
             source = "https://aovivo.ebc.com.br/embed-canaleducacao.html",
             checkedOn = "2026-11-10",
         ),
@@ -71,7 +72,7 @@ object FreeChannels {
             id = "tvcamara",
             name = "TV Câmara",
             url = "https://stream3.camara.gov.br/tv1/manifest.m3u8",
-            logo = null,
+            logo = "https://www.camara.leg.br/tema/apple-touch-icon-180x180.png",
             source = "https://www.camara.leg.br/tv",
             checkedOn = "2026-09-20",
         ),
@@ -79,7 +80,7 @@ object FreeChannels {
             id = "tvcultura",
             name = "TV Cultura",
             url = "https://player-tvcultura.stream.uol.com.br/live/tvcultura.m3u8",
-            logo = null,
+            logo = "https://cultura.uol.com.br/_img/tvcultura/favicon/apple-icon-180x180.png",
             source = "https://cultura.uol.com.br/aovivo",
             checkedOn = "2026-09-20",
         ),
@@ -87,7 +88,7 @@ object FreeChannels {
             id = "redeminas",
             name = "Rede Minas",
             url = "https://8hzcavccys.zoeweb.tv/redeminas/ngrp:redeminas_all/playlist.m3u8",
-            logo = null,
+            logo = "https://minasplay.com/assets/icons/192x192.png",
             // redeminas.tv manda para minasplay.com/aovivo, cujo botão "Assistir"
             // abre o player da ZoePlay com esta URL.
             source = "https://minasplay.com/aovivo",
@@ -96,4 +97,17 @@ object FreeChannels {
     )
 
     fun byId(id: String): FreeChannel? = ALL.firstOrNull { it.id == id }
+}
+
+/**
+ * Até duas letras para o lugar de um logo que falta ou não carregou: "TV
+ * Cultura" vira "TC". O "TV" sozinho na frente vale só o T.
+ */
+fun initials(name: String): String {
+    val words = name.split(' ', '-', '|', ':', '.').map { w -> w.filter(Char::isLetterOrDigit) }.filter { it.isNotEmpty() }
+    return when (words.size) {
+        0 -> ""
+        1 -> words[0].take(2)
+        else -> "${words[0].first()}${words[1].first()}"
+    }.uppercase()
 }

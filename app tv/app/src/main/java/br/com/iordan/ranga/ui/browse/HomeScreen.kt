@@ -282,6 +282,7 @@ private fun FreeChannelList(
             ChannelRow(
                 title = channel.name,
                 imageUrl = channel.logo,
+                logoPlate = true,
                 subtitle = "Stream oficial · ${channel.sourceHost}",
                 onClick = { onOpen(channels, index) },
             )

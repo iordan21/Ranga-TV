@@ -7,6 +7,8 @@ Player de TV ao vivo para **Android, Windows e navegador**, feito para usar com 
 > [`FreeChannels.kt`](core/src/main/kotlin/br/com/iordan/ranga/data/FreeChannels.kt).
 > Quem já tem conta em um serviço compatível com Xtream Codes pode entrar com ela, e isso é opcional.
 
+![A aba Grátis no PC](docs/tela-gratis.png)
+
 O código comum (protocolo, catálogo, favoritos) fica em `core/`, e cada app tem a sua tela.
 
 ```
