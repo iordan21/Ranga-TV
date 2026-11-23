@@ -1,14 +1,16 @@
-# Ranga
+# Ranga TV
 
-Player de IPTV pessoal falando **Xtream Codes** — o protocolo que o painel do
-provedor expõe em `player_api.php`. Duas aplicações, um único protocolo.
+Player de TV ao vivo para **Android, Windows e navegador**, feito para usar com controle remoto ou controle de videogame.
 
-Os dois apps abrem sem conta, na aba **Grátis**: canais abertos com o stream que a
-própria emissora publica (a lista, com fonte e data de verificação de cada um,
-está em `core/.../FreeChannels.kt`). A conta Xtream é opcional e destrava o resto.
+> **O Ranga TV não traz lista, senha nem canal pago.** A aba **Grátis** usa só canais abertos, com o endereço que a
+> própria emissora publica. A fonte e a data de verificação de cada um estão em
+> [`FreeChannels.kt`](core/src/main/kotlin/br/com/iordan/ranga/data/FreeChannels.kt).
+> Quem já tem conta em um serviço compatível com Xtream Codes pode entrar com ela, e isso é opcional.
+
+O código comum (protocolo, catálogo, favoritos) fica em `core/`, e cada app tem a sua tela.
 
 ```
-C:\ranga\
+Ranga-TV\
   core\     protocolo Xtream + regras de dados. Kotlin puro, sem UI.
   app tv\   Android: celular, tablet e Android TV / TV Box.
   app pc\   Windows: aplicativo de desktop.
@@ -118,3 +120,8 @@ diferentes. `./gradlew test` em qualquer uma das pastas.
 O que **não** está no core: persistência (DataStore no Android, arquivo JSON em
 `%APPDATA%` no Windows), UI e player. São genuinamente diferentes por
 plataforma — tentar unificar custaria mais do que duplica.
+
+## Licença
+
+GPL v3 (veja [LICENSE](LICENSE)). O app de PC usa o [vlcj](https://github.com/caprica/vlcj), que é GPL v3.
+A libvlc é LGPL 2.1 e vem como biblioteca separada.
